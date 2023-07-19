@@ -35,10 +35,13 @@ controller_organizations:
 
 controller_inventories:
   - name: 'Demo Inventory'
+    state: absent
+
+  - name: 'AGOF Demo Inventory'
     organization: '{{ orgname_vault }}'
 
 controller_inventory_sources:
-  - name: 'Demo Inventory Source'
+  - name: 'AGOF Demo Inventory Source'
     inventory: 'Demo Inventory'
     credential: 'ec2_ssh_credential'
     overwrite: true
@@ -59,7 +62,7 @@ controller_templates:
     project: '{{ agof_demo_project_name }}'
     job_type: run
     playbook: 'ansible/playbooks/ping.yml'
-    inventory: "Demo Inventory"
+    inventory: "AGOF Demo Inventory"
     credentials:
       - ec2_ssh_credential
 
