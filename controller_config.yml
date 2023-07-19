@@ -1,6 +1,6 @@
 ---
 controller_username_vault: 'admin'
-controller_password_vault: '{{ lookup("file", "~/.controller_password" }}'
+controller_password_vault: '{{ lookup("file", "~/.controller_password") }}'
 
 controller_username: '{{ controller_username_vault }}'
 controller_password: '{{ controller_password_vault }}'
@@ -73,7 +73,7 @@ controller_launch_jobs:
 
 orgname_vault: 'Demo Organization'
 
-demo_ssh_key_file: '~/{{ ec2_name_prefix }}/{{ ec2_name_prefix }}-private.pem' | expanduser
+demo_ssh_key_file: '~/{{ ec2_name_prefix }}/{{ ec2_name_prefix }}-private.pem'
 
 controller_credentials:
   - name: ec2_ssh_credential
@@ -82,5 +82,5 @@ controller_credentials:
     credential_type: Machine
     inputs:
       username: 'ec2-user'
->>      ssh_key_data: "{{ lookup('file', demo_ssh_key_file }}"
+      ssh_key_data: "{{ lookup('file', demo_ssh_key_file }}"
       become_method: sudo
