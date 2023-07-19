@@ -6,3 +6,6 @@ aap
 [automation_hub]
 
 [aws_nodes]
+
+[all]
+aap
