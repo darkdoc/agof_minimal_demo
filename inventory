@@ -1,7 +1,7 @@
 [build_control]
-localhost
 
 [aap_controller]
+aap
 
 [automation_hub]
 
