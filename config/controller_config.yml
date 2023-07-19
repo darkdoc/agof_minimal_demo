@@ -34,9 +34,6 @@ controller_organizations:
   - name: '{{ orgname_vault }}'
 
 controller_inventories:
-  - name: 'Demo Inventory'
-    state: absent
-
   - name: 'AGOF Demo Inventory'
     organization: '{{ orgname_vault }}'
 
