@@ -82,5 +82,5 @@ controller_credentials:
     credential_type: Machine
     inputs:
       username: 'ec2-user'
-      ssh_key_data: "{{ lookup('file', demo_ssh_key_file }}"
+      ssh_key_data: "{{ lookup('file', demo_ssh_key_file) }}"
       become_method: sudo
