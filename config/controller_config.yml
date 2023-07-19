@@ -39,7 +39,7 @@ controller_inventories:
 
 controller_inventory_sources:
   - name: 'AGOF Demo Inventory Source'
-    inventory: 'Demo Inventory'
+    inventory: 'AGOF Demo Inventory'
     credential: 'ec2_ssh_credential'
     overwrite: true
     overwrite_vars: true
