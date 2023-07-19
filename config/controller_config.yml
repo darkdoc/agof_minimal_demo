@@ -1,4 +1,6 @@
 ---
+orgname_vault: 'Demo Organization'
+
 controller_username_vault: 'admin'
 controller_password_vault: '{{ lookup("file", "~/.controller_password") }}'
 
@@ -56,7 +58,7 @@ controller_templates:
     organization: "{{ orgname_vault }}"
     project: '{{ agof_demo_project_name }}'
     job_type: run
-    playbook: ping.yml
+    playbook: 'ansible/playbooks/ping.yml'
     inventory: "Demo Inventory"
     credentials:
       - ec2_ssh_credential
@@ -66,12 +68,6 @@ controller_schedules:
     organization: "{{ orgname_vault }}"
     unified_job_template: Ping Playbook
     rrule: DTSTART:20191219T130500Z RRULE:FREQ=MINUTELY;INTERVAL=120
-
-controller_launch_jobs:
-  - name: Ping Playbook
-    organization: "{{ orgname_vault }}"
-
-orgname_vault: 'Demo Organization'
 
 demo_ssh_key_file: '~/{{ ec2_name_prefix }}/{{ ec2_name_prefix }}-private.pem'
 
@@ -84,3 +80,7 @@ controller_credentials:
       username: 'ec2-user'
       ssh_key_data: "{{ lookup('file', demo_ssh_key_file) }}"
       become_method: sudo
+
+controller_launch_jobs:
+  - name: Ping Playbook
+    organization: "{{ orgname_vault }}"
