@@ -11,6 +11,6 @@ The intention is to provide an example to build on, to build more interesting pa
 ## How do I get started?
 
 1. Check this repository out
-1. Check out the AGOF repostitory, which will serve as the provisioner for the pattern
+1. Check out the AGOF [repostitory](https://github.com/mhjacks/agof), which will serve as the provisioner for the pattern
 1. Configure an `~/agof_vault.yml` file with your AWS credentials and configuration
 1. Run `./patterns.sh make intall` from the AGOF repository directory, with `controller_config_dir` set to this repository's `config` directory. If this repo is checked out as `~/gitwork/agof_minimal_demo`, the setting should look like: `controller_config_dir: '{{ '~/gitwork/agof_minimal_demo/config' | expanduser }}`.
