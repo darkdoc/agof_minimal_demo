@@ -15,8 +15,6 @@ controller_configuration_async_retries: 30
 
 controller_settings: []
 
-orgname_vault: 'Demo Organization'
-
 controller_projects:
   - name: Demo Project
     state: absent
