@@ -1,0 +1,36 @@
+apiVersion: v1
+baseDomain: "{{ pattern_dns_zone | default('aws.validatedpatterns.io') }}"
+compute:
+    - architecture: amd64
+      hyperthreading: Enabled
+      name: worker
+      platform: { aws: { type: {{ ocp_worker_instance_type | quote }} } }
+      replicas: {{ worker_replicas | default(0) }}
+controlPlane:
+    architecture: amd64
+    hyperthreading: Enabled
+    name: master
+    platform: { aws: { type: {{ ocp_control_plane_instance_type | quote }} } }
+    replicas: {{ control_plane_replicas | default(3) }}
+metadata:
+creationTimestamp: null
+name: "{{ cluster_name | default(ocp_username + '-agof-vp-testcluster') }}"
+networking:
+clusterNetwork:
+- cidr: 10.128.0.0/14
+    hostPrefix: 23
+machineNetwork:
+- cidr: 10.0.0.0/16
+networkType: "{{ network_type | default('OVNKubernetes') }}"
+serviceNetwork:
+- 172.30.0.0/16
+platform:
+aws:
+    region: "{{ ocp_aws_region | default('eu-west-1') }}"
+    userTags:
+      auto-stop: stop
+      owner: "{{ ocp_username }}"
+publish: External
+pullSecret: '{{ ocp_pull_secret | to_json }}'
+sshKey: |-
+{{ ocp_ssh_pub_key }}

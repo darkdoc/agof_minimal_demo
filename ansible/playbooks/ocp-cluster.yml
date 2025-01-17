@@ -1,0 +1,11 @@
+---
+- name: My first play
+  hosts: localhost
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Isolated paths mounted into execution node: {{ AWX_ISOLATION_PATHS }}"
+  
+    - name: Write install-config file
+      ansible.builtin.template:
+        src: ../templates/install-config.yml.j2
+        dest: "/vp-tmp-dir/install-config_new.yaml"
