@@ -1,0 +1,24 @@
+# vim:ft=ansible:
+---
+- hosts: aap
+  vars:
+    #for now data_folder has to be created on aap host and has to be owned by ec2-user
+    data_folder: /mydata
+
+  tasks:
+    - name: Check if there is an existing ocp cluster installation
+      ansible.builtin.find:
+        paths: "{{ data_folder }}"
+        file_type: any
+        hidden: true
+      register: files
+
+    - name: Fail if the directory is empty, nothing to uninstall
+      ansible.builtin.fail:
+        msg: "The data directory {{ data_folder }} is empty"
+      when: files.matched == 0
+
+    - name: Remove config file
+      ansible.builtin.file:
+        path: "{{ data_folder }}/install-config.yml"
+        state: absent
