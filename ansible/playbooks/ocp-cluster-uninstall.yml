@@ -1,16 +1,17 @@
 # vim:ft=ansible:
 ---
-- hosts: aap
+- name: Delete the created openshift cluster on aws
+  hosts: aap
   vars:
-    #for now data_folder has to be created on aap host and has to be owned by ec2-user
+    # for now data_folder has to be created on aap host and has to be owned by ec2-user
     data_folder: /mydata
 
   tasks:
     - name: Check if there is an existing ocp cluster installation
       ansible.builtin.find:
-        paths: "{{ data_folder }}"
-        file_type: any
-        hidden: true
+        paths: "{{ data_folder }}/cluster"
+        file_type: directory
+        hidden: false
       register: files
 
     - name: Fail if the directory is empty, nothing to uninstall
@@ -18,7 +19,11 @@
         msg: "The data directory {{ data_folder }} is empty"
       when: files.matched == 0
 
-    - name: Remove config file
-      ansible.builtin.file:
-        path: "{{ data_folder }}/install-config.yml"
-        state: absent
+    - name: Wait for uninstall to complete
+      ansible.builtin.shell: |
+        {{ data_folder }}/openshift-install destroy cluster --dir=.
+      args:
+        chdir: "{{ data_folder }}/cluster"
+      environment:
+        AWS_ACCESS_KEY_ID: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID')}}"
+        AWS_SECRET_ACCESS_KEY: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY')}}"

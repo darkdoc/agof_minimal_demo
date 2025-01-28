@@ -1,22 +1,67 @@
 # vim:ft=ansible:
 ---
-- hosts: aap
+- name: Create an openshift cluster on aws
+  hosts: aap
   vars:
-    #for now data_folder has to be created on aap host and has to be owned by ec2-user
+    # for now data_folder has to be created on aap host and has to be owned by ec2-user
     data_folder: /mydata
+    openshift_version: 4.16.9
+    openshift_mirror: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
+    openshift_kubeadmin_password_search_string: "###CLUSTER_PASSWORD###"
 
   tasks:
+    - name: Create folders
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0777"
+      with_items:
+        - "{{ data_folder }}"
+        - "{{ data_folder }}/cluster"
+
     - name: Check if there is an existing ocp cluster installation
       ansible.builtin.find:
-        paths: "{{ data_folder }}"
-        file_type: any
-        hidden: true
+        paths: "{{ data_folder }}/cluster"
+        file_type: directory
+        hidden: false
       register: files
-    - name: Fail if the directory is not empty, a cluster is already created
-      ansible.builtin.fail:
-        msg: "The data directory {{ data_folder }} is not empty"
-      when: files.matched != 0
+
     - name: Generate ocp install config from template
       ansible.builtin.template:
         src: ../templates/install-config.yml.j2
-        dest: "{{ data_folder }}/install-config.yml"
+        dest: "{{ data_folder }}/cluster/install-config.yaml"
+        mode: "0640"
+
+    - name: Download openshift-install
+      ansible.builtin.get_url:
+        url: "{{ openshift_mirror }}/{{ openshift_version }}/openshift-install-linux.tar.gz"
+        dest: "{{ data_folder }}/openshift-install-linux.tar.gz"
+        mode: "0640"
+
+    - name: Uncompress openshift install
+      ansible.builtin.unarchive:
+        src: "{{ data_folder }}/openshift-install-linux.tar.gz"
+        dest: "{{ data_folder }}"
+        remote_src: true
+
+    - name: Install openshift cluster
+      ansible.builtin.shell: |
+        {{ data_folder }}/openshift-install create cluster --dir=.
+      args:
+        chdir: "{{ data_folder }}/cluster"
+      environment:
+        AWS_ACCESS_KEY_ID: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID')}}"
+        AWS_SECRET_ACCESS_KEY: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY')}}"
+      when: files.matched == 0
+
+    - name: Read kubeadmin password from filesystem
+      ansible.builtin.slurp:
+        src: "{{ data_folder }}/cluster/auth/kubeadmin-password"
+      register: kubeadmin_password
+      when: files.matched != 0
+
+    - name: Print cluster password 
+      ansible.builtin.debug:
+        msg: "{{ openshift_kubeadmin_password_search_string }}{{ kubeadmin_password['content'] | b64decode }}{{ openshift_kubeadmin_password_search_string }}"
+      when: files.matched != 0
